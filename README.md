@@ -1,0 +1,2 @@
+# KoyoFes2023-ReceptionAPI
+2023年度こうよう祭受付システムのバックエンドAPI
