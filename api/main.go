@@ -4,7 +4,9 @@ import (
 	"api/attend_func/handler"
 	"database/sql"
 	"fmt"
+	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -34,6 +36,12 @@ func openSQL(driverName, dataSourceName string, maxRetries int) *sql.DB {
 	return nil
 }
 
+type TemperatureStruct struct {
+	Uid      string  `json:"uid"`
+	Day      int     `json:"day"`
+	Bodytemp float64 `json:"bodytemp"`
+}
+
 func main() {
 	router := gin.Default()
 	config := cors.DefaultConfig()
@@ -41,16 +49,33 @@ func main() {
 	router.Use(cors.New(config))
 
 	db := openSQL("mysql", accessPoint, 10)
-	var target_uid string = "33"
-	attend_instance := &handler.AttendStruct{DB: db, UID: &target_uid}
+	defer db.Close()
 
 	router.GET("/attend", func(c *gin.Context) {
-		target_uid = c.Query("uid")
-		handler.HandleExists(attend_instance)
+		uid := c.Query("uid")
+		day, err := strconv.Atoi(c.Query("day"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": "dayのstring->int変換に失敗"})
+		}
+		attendStructInstance := &handler.AttendStruct{DB: db, UID: &uid, Day: &day}
+		err = handler.HandleExists(attendStructInstance)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "success!"})
 	})
-	//	router.GET("/checkin", func(c *gin.Context) {
-	//		uid := c.Query("uid")
-	//		c.String(http.StatusOK, "hello %s uid", uid)
-	//	})
+
+	router.POST("/set_temperature", func(c *gin.Context) {
+		var tempMiddleInstance TemperatureStruct
+		err := c.ShouldBindJSON(&tempMiddleInstance)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
+		}
+		temperatureInstance := &handler.AttendStruct{DB: db, UID: &tempMiddleInstance.Uid, BodyTemp: &tempMiddleInstance.Bodytemp, Day: &tempMiddleInstance.Day}
+		err = handler.HandleSetTemperature(temperatureInstance)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
+		}
+	})
 	router.Run(":8080")
 }
