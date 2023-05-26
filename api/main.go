@@ -87,6 +87,7 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
 			return
 		}
+		c.JSON(http.StatusOK, gin.H{"message": "success!"})
 		return
 	})
 	router.Run(":8080")

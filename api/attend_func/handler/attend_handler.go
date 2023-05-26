@@ -50,14 +50,22 @@ func (a *AttendStruct) ExistsUIDUser() (bool, error) {
 }
 
 func (a *AttendStruct) SetTemperature() error {
-	if *a.Day == 1 {
-		_, err := a.DB.Exec("UPDATE reception SET temperature_first_day = ? WHERE uid = ?", a.BodyTemp, a.UID)
+	temperatureEntryAllowed, err := a.ExistsUIDUser()
+	if err != nil {
+		return errors.New(err.Error())
+	}
+
+	if *a.Day == 1 && temperatureEntryAllowed {
+		test, err := a.DB.Exec("UPDATE reception SET temperature_first_day = ? WHERE uid = ?", *a.BodyTemp, *a.UID)
 		if err != nil {
 			return errors.New("一日目の体温書き込み失敗")
 		}
+
+		fmt.Println(test.LastInsertId())
+		fmt.Println(test.RowsAffected())
 		return nil
-	} else if *a.Day == 2 {
-		_, err := a.DB.Exec("UPDATE reception SET temperature_second_day = ? WHERE uid = ?", a.BodyTemp, a.UID)
+	} else if *a.Day == 2 && temperatureEntryAllowed {
+		_, err := a.DB.Exec("UPDATE reception SET temperature_second_day = ? WHERE uid = ?", *a.BodyTemp, *a.UID)
 		if err != nil {
 			return errors.New("二日目の体温の書き込み失敗")
 		}
