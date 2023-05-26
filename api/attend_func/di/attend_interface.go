@@ -1,6 +1,6 @@
 package di
 
 type Attend_Interface interface {
-	ExistsUIDUser() error
+	ExistsUIDUser() (bool, error)
 	SetTemperature() error
 }
