@@ -1,0 +1,102 @@
+openapi: 3.1.0
+info:
+  version: '1.0'
+  title: Koyo-Back-Endpoint
+servers:
+  - url: 'http://localhost:8080'
+paths:
+  '/users/{uid}':
+    get:
+      summary: ''
+      description: ''
+      operationId: get-users-uid
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content: {}
+      responses:
+        '200':
+          $ref: '#/components/responses/userdata'
+        '400':
+          $ref: '#/components/responses/error'
+      servers:
+        - url: 'http://localhost:8080'
+    post:
+      summary: ''
+      operationId: post-users-uid
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                temperature_day1:
+                  type: number
+                  format: float
+                temperature_day2:
+                  type: number
+                  format: float
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/error'
+      servers:
+        - url: 'http://localhost:8080'
+components:
+  requestBodies:
+    temperature:
+      description: temp
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              temperature_day1:
+                type: number
+                format: float
+              temperature_day2:
+                type: number
+                format: float
+  responses:
+    userdata:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              uid:
+                type: string
+              attends_day1:
+                type: boolean
+              attends_day2:
+                type: boolean
+              temperature_day1:
+                type: number
+                format: float
+              temperature_day2:
+                type: number
+                format: float
+    error:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
