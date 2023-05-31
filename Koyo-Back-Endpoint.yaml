@@ -28,9 +28,9 @@ paths:
       servers:
         - url: 'http://localhost:8080'
           description: ローカル
-    post:
+    put:
       summary: ''
-      operationId: post-users-uid
+      operationId: put-users-uid
       parameters:
         - name: uid
           in: path
@@ -38,7 +38,6 @@ paths:
           schema:
             type: string
       requestBody:
-        description: ''
         content:
           application/json:
             schema:

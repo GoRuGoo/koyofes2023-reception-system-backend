@@ -1,13 +1,14 @@
 package main
 
 import (
+	"api/ReceiveStruct"
 	"api/attend_func/handler"
 	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
+	//	"strconv"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -54,39 +55,51 @@ func main() {
 	}
 	defer db.Close()
 
-	router.GET("/attend", func(c *gin.Context) {
-		uid := c.Query("uid")
-		day, err := strconv.Atoi(c.Query("day"))
+	router.GET("/users/:uid", func(c *gin.Context) {
+
+		uid := c.Param("uid")
+		attendStructInstance := &handler.AttendStruct{DB: db, UID: &uid}
+
+		returnUserInfo, err := handler.HandleExists(attendStructInstance)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": "dayのstringからint変換に失敗"})
-			return
-		}
-		attendStructInstance := &handler.AttendStruct{DB: db, UID: &uid, Day: &day}
-		err = handler.HandleExists(attendStructInstance)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "success!"})
+		c.JSON(http.StatusOK, returnUserInfo)
 		return
 	})
 
-	router.POST("/set_temperature", func(c *gin.Context) {
-		var tempMiddleInstance TemperatureStruct
-		err := c.ShouldBindJSON(&tempMiddleInstance)
+	router.PUT("/users/:uid", func(c *gin.Context) {
+		uid := c.Param("uid")
+		attendStructInstance := &handler.AttendStruct{DB: db, UID: &uid}
+		var postedjson receivestruct.PutTemperatureBodyStruct
+		err := c.ShouldBindJSON(&postedjson)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		}
+		err = handler.HandleSetTemperature(attendStructInstance, postedjson)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		temperatureInstance := &handler.AttendStruct{DB: db, UID: &tempMiddleInstance.UID, BodyTemp: &tempMiddleInstance.BodyTemp, Day: &tempMiddleInstance.Day}
-		err = handler.HandleSetTemperature(temperatureInstance)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"message": "success!"})
-		return
 	})
+
+	//	router.POST("/set_temperature", func(c *gin.Context) {
+	//		var tempMiddleInstance TemperatureStruct
+	//		err := c.ShouldBindJSON(&tempMiddleInstance)
+	//		if err != nil {
+	//			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
+	//			return
+	//		}
+	//		temperatureInstance := &handler.AttendStruct{DB: db, UID: &tempMiddleInstance.UID, BodyTemp: &tempMiddleInstance.BodyTemp, Day: &tempMiddleInstance.Day}
+	//		err = handler.HandleSetTemperature(temperatureInstance)
+	//		if err != nil {
+	//			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
+	//			return
+	//		}
+	//		c.JSON(http.StatusOK, gin.H{"message": "success!"})
+	//		return
+	//	})
 	router.Run(":8080")
 }
