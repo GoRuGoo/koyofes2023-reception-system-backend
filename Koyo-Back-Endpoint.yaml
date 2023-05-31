@@ -2,8 +2,10 @@ openapi: 3.1.0
 info:
   version: '1.0'
   title: Koyo-Back-Endpoint
+  description: こうよう祭2023の受付システムのバックエンドエンドポイント
 servers:
   - url: 'http://localhost:8080'
+    description: ローカル
 paths:
   '/users/{uid}':
     get:
@@ -25,6 +27,7 @@ paths:
           $ref: '#/components/responses/error'
       servers:
         - url: 'http://localhost:8080'
+          description: ローカル
     post:
       summary: ''
       operationId: post-users-uid
@@ -54,6 +57,7 @@ paths:
           $ref: '#/components/responses/error'
       servers:
         - url: 'http://localhost:8080'
+          description: ローカル
 components:
   requestBodies:
     temperature:
