@@ -60,20 +60,6 @@ paths:
         - url: 'http://localhost:8080'
           description: ローカル
 components:
-  requestBodies:
-    temperature:
-      description: temp
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              temperature_day1:
-                type: number
-                format: float
-              temperature_day2:
-                type: number
-                format: float
   responses:
     userdata:
       description: Example response
