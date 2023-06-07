@@ -1,8 +1,6 @@
 package di
 
-import receivestruct "api/ReceiveStruct"
-
-type AttendReturnStruct struct {
+type ReturnAttendUserInfoStruct struct {
 	UID                    *string  `json:"uid"`
 	Name                   *string  `json:"name"`
 	Attends_first_day      *bool    `json:"attends_first_day"`
@@ -11,7 +9,12 @@ type AttendReturnStruct struct {
 	Temperature_second_day *float64 `json:"temperature_second_day"`
 }
 
+type ReceiveBodyTemperatureStruct struct {
+	BodyTempDay1 float64 `json:"temperature_day1"`
+	BodyTempDay2 float64 `json:"temperature_day2"`
+}
+
 type Attend_Interface interface {
-	ExistsUIDUser() (AttendReturnStruct, error)
-	SetTemperature(receivestruct.PutTemperatureBodyStruct) error
+	GetUserInfo() (ReturnAttendUserInfoStruct, error)
+	SetTemperature(ReceiveBodyTemperatureStruct) error
 }

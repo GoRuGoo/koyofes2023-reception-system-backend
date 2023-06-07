@@ -1,7 +1,6 @@
 package handler
 
 import (
-	receivestruct "api/ReceiveStruct"
 	"api/attend_func/di"
 	"database/sql"
 	"errors"
@@ -10,17 +9,15 @@ import (
 	"time"
 )
 
-type AttendStruct struct {
-	DB       *sql.DB
-	UID      *string
-	BodyTemp *float64
+type ConnectBaseInfoStruct struct {
+	DB  *sql.DB
+	UID *string
 }
 
 // 時間判定用関数
 func checkAvailableDateTime(dayInformation string) error {
 
 	envVariable := fmt.Sprintf("DAY_%d_DATETIME", map[string]int{"temperature_first_day": 1, "temperature_second_day": 2}[dayInformation])
-	fmt.Println(envVariable)
 
 	envDateTimeStr := os.Getenv(envVariable)
 	if envDateTimeStr == "" {
@@ -38,19 +35,21 @@ func checkAvailableDateTime(dayInformation string) error {
 	return nil
 }
 
-func (a *AttendStruct) ExistsUIDUser() (di.AttendReturnStruct, error) {
-	ReturnInstance := di.AttendReturnStruct{}
+func (a *ConnectBaseInfoStruct) GetUserInfo() (di.ReturnAttendUserInfoStruct, error) {
+	ReturnInstance := di.ReturnAttendUserInfoStruct{}
 
 	err := a.DB.QueryRow("SELECT uid,name,attends_first_day,attends_second_day,temperature_first_day,temperature_second_day FROM reception WHERE uid = ?", *a.UID).Scan(&ReturnInstance.UID, &ReturnInstance.Name, &ReturnInstance.Attends_first_day, &ReturnInstance.Attends_second_day, &ReturnInstance.Temperature_first_day, &ReturnInstance.Temperature_second_day)
 	if err != nil {
-		return di.AttendReturnStruct{}, errors.New(err.Error())
+		return di.ReturnAttendUserInfoStruct{}, errors.New(err.Error())
 	}
 	return ReturnInstance, nil
 }
 
-func (a *AttendStruct) SetTemperature(p receivestruct.PutTemperatureBodyStruct) error {
+func (a *ConnectBaseInfoStruct) SetTemperature(p di.ReceiveBodyTemperatureStruct) error {
 	if p.BodyTempDay1 != 0 && p.BodyTempDay2 != 0 {
 		return errors.New("体温が二つ入力されています。体温情報は改変出来ません。")
+	} else if (p.BodyTempDay1 == 0 && p.BodyTempDay2 != 0) || (p.BodyTempDay1 != 0 && p.BodyTempDay2 == 0) {
+		return errors.New("体温キーが二つ入力されています。片方にしてください。")
 	} else if p.BodyTempDay1 == 0 && p.BodyTempDay2 == 0 {
 		return errors.New("体温情報が空です。")
 	}
@@ -75,10 +74,10 @@ func (a *AttendStruct) SetTemperature(p receivestruct.PutTemperatureBodyStruct) 
 }
 
 // handle function
-func HandleExists(a di.Attend_Interface) (di.AttendReturnStruct, error) {
-	return a.ExistsUIDUser()
+func HandleGetUserInfo(a di.Attend_Interface) (di.ReturnAttendUserInfoStruct, error) {
+	return a.GetUserInfo()
 }
 
-func HandleSetTemperature(a di.Attend_Interface, p receivestruct.PutTemperatureBodyStruct) error {
+func HandleSetTemperature(a di.Attend_Interface, p di.ReceiveBodyTemperatureStruct) error {
 	return a.SetTemperature(p)
 }

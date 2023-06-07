@@ -1,23 +1,19 @@
 package main
 
 import (
-	"api/ReceiveStruct"
 	"api/attend_func/handler"
 	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
-	//	"strconv"
+
+	"api/attend_func/di"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-)
-
-const (
-	accessPoint = "gorugo:gorupass@tcp(localhost:3306)/reception"
 )
 
 func openSQL(driverName, dataSourceName string, maxRetries int) (*sql.DB, error) {
@@ -36,16 +32,13 @@ func openSQL(driverName, dataSourceName string, maxRetries int) (*sql.DB, error)
 	return nil, errors.New("DBとの接続に完全失敗")
 }
 
-type TemperatureStruct struct {
-	UID      string  `json:"uid"`
-	Day      int     `json:"day"`
-	BodyTemp float64 `json:"bodytemp"`
-}
-
 func main() {
+
+	accessPoint := os.Getenv("KOYO_FES_ACCESSPOINT")
+
 	router := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowOrigins = []string{os.Getenv("KOYO_FES_ALLOW_ORIGINS")}
 	router.Use(cors.New(config))
 
 	db, err := openSQL("mysql", accessPoint, 10)
@@ -58,48 +51,32 @@ func main() {
 	router.GET("/users/:uid", func(c *gin.Context) {
 
 		uid := c.Param("uid")
-		attendStructInstance := &handler.AttendStruct{DB: db, UID: &uid}
+		connectBaseInfo := &handler.ConnectBaseInfoStruct{DB: db, UID: &uid}
 
-		returnUserInfo, err := handler.HandleExists(attendStructInstance)
+		forReturnUserInfo, err := handler.HandleGetUserInfo(connectBaseInfo)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusOK, returnUserInfo)
+		c.JSON(http.StatusOK, forReturnUserInfo)
 		return
 	})
 
 	router.PUT("/users/:uid", func(c *gin.Context) {
 		uid := c.Param("uid")
-		attendStructInstance := &handler.AttendStruct{DB: db, UID: &uid}
-		var postedjson receivestruct.PutTemperatureBodyStruct
-		err := c.ShouldBindJSON(&postedjson)
+		connectBaseInfo := &handler.ConnectBaseInfoStruct{DB: db, UID: &uid}
+		var receiveUserBodyTemp di.ReceiveBodyTemperatureStruct
+		err := c.ShouldBindJSON(&receiveUserBodyTemp)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		}
-		err = handler.HandleSetTemperature(attendStructInstance, postedjson)
+		err = handler.HandleSetTemperature(connectBaseInfo, receiveUserBodyTemp)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 	})
 
-	//	router.POST("/set_temperature", func(c *gin.Context) {
-	//		var tempMiddleInstance TemperatureStruct
-	//		err := c.ShouldBindJSON(&tempMiddleInstance)
-	//		if err != nil {
-	//			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
-	//			return
-	//		}
-	//		temperatureInstance := &handler.AttendStruct{DB: db, UID: &tempMiddleInstance.UID, BodyTemp: &tempMiddleInstance.BodyTemp, Day: &tempMiddleInstance.Day}
-	//		err = handler.HandleSetTemperature(temperatureInstance)
-	//		if err != nil {
-	//			c.JSON(http.StatusBadRequest, gin.H{"errorMessage": err.Error()})
-	//			return
-	//		}
-	//		c.JSON(http.StatusOK, gin.H{"message": "success!"})
-	//		return
-	//	})
 	router.Run(":8080")
 }
