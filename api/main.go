@@ -34,11 +34,11 @@ func openSQL(driverName, dataSourceName string, maxRetries int) (*sql.DB, error)
 
 func main() {
 
-	accessPoint := os.Getenv("KOYO_FES_ACCESSPOINT")
+	accessPoint := "root:gorupass@tcp(mysql:3306)/reception"
 
 	router := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{os.Getenv("KOYO_FES_ALLOW_ORIGINS")}
+	config.AllowOrigins = []string{"http://localhost:3000"}
 	router.Use(cors.New(config))
 
 	db, err := openSQL("mysql", accessPoint, 10)
