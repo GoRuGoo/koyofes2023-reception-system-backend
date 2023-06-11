@@ -10,7 +10,7 @@ on:
       - closed
     paths:
       - koyofes2023-reception-system-openapi.yml
-      - .github/workflows/deploy-to-github-pages.yml
+      - .github/workflows/deploy-to-github-pages.yaml
 
 jobs:
   deploy-to-github-pages:
@@ -24,14 +24,14 @@ jobs:
 
       - name: Validate Swagger Files
         run: |
-          swagger-cli validate -d openapi.yaml --type yaml
+          swagger-cli validate -d koyofes2023-reception-system-openapi.yaml --type yaml
 
       - name: Generate Swagger UI
         if: github.event.pull_request.merged == true
         uses: Legion2/swagger-ui-action@v1
         with:
           output: swagger-ui
-          spec-file: openapi.yaml
+          spec-file: koyofes2023-reception-system-openapi.yaml
 
       - name: Deploy to GitHub Pages
         if: github.event.pull_request.merged == true
