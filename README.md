@@ -68,7 +68,7 @@ docker-compose up
 2.
 
 ```
-docker-compose exec go run main.go
+docker-compose exec api go run main.go
 ```
 
 ## Author
