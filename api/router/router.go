@@ -15,6 +15,6 @@ func NewRouter() *gin.Engine {
 	router.Use(cors.New(config))
 
 	router.GET("/users/:uid", controllers.GetReceptionUserInfo)
-
+	router.PUT("/users/:uid", controllers.SetReceptionUserBodyTemperature)
 	return router
 }
