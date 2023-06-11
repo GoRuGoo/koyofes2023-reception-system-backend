@@ -57,7 +57,7 @@ gorupass
 CREATE DATABASE reception;
 ```
 
-## Usage
+## Usage(local)
 
 1. Build & start container
 
