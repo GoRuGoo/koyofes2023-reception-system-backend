@@ -30,14 +30,26 @@ git clone https://github.com/GoRuGoo/koyofes2023-reception-system-backend.git
 ```
 cd koyofes2023-reception-system-backend
 ```
+3. Create env file
+```
+touch mysql_and_datetime.env
+```
+```
+PLANET_SCALE_USER_NAME=hogehoge
+PLANET_SCALE_USER_PASSWORD=hogehoge
+PLANET_SCALE_IP=hogehoge
 
-3. Build docker image
+DAY_1_DATETIME=2023-06-11T00:00:00Z
+DAY_2_DATETIME=2023-06-11T00:00:00Z
+```
+
+4. Build docker image
 
 ```
 docker-compose up -d
 ```
 
-4. Create database
+5. Create database
 
 ボリュームマウントでは何故か docker-compose.yml ファイルで DB 構築出来なかった為仕方なく...
 
