@@ -25,3 +25,5 @@ go.work
 docker/
 
 memo.md
+
+*.env
