@@ -4,6 +4,8 @@ import (
 	"api/db"
 	"api/models"
 	"api/router"
+	"fmt"
+	"os"
 )
 
 func main() {
@@ -12,5 +14,6 @@ func main() {
 	models.InitReception()
 
 	r := router.NewRouter()
-	r.Run(":8080")
+	port := fmt.Sprintf(":%s", os.Getenv("PORT"))
+	r.Run(port)
 }

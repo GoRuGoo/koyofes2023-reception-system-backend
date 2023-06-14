@@ -1,7 +1,7 @@
 version: '3'
 services:
   mysql:
-    build: ./build/db/
+    build: ./build/develop/db/
     volumes:
       - mysql-data:/var/lib/mysql
     environment:
@@ -11,14 +11,13 @@ services:
     platform: linux/amd64
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-time-zone=Asia/Tokyo
   api:
-    build: ./build/go/ # ビルドに使うDockerfileの場所
+    build: ./build/develop/go/ # ビルドに使うDockerfileの場所
     tty: true # コンテナ永続化の設定
     volumes:
       - ./api:/go/src/api # マウントディレクトリ
     ports:
       - '8080:8080'
     env_file:
-      - datetime.env
-      - mysql.env 
+      - mysql_and_datetime.env
 volumes:
   mysql-data:
