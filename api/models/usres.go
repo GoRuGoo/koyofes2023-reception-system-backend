@@ -70,9 +70,14 @@ func isAcceptableTime(targetDay string) error {
 	if err != nil {
 		return errors.New(err.Error())
 	}
-	currentDateTime := time.Now()
-	if currentDateTime.Year() != normalizedEnvDateTime.Year() || currentDateTime.YearDay() != normalizedEnvDateTime.YearDay() {
-		return errors.New("受付可能日時ではありません。")
+	jst, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	currentDateTime := time.Now().In(jst)
+
+	if !(currentDateTime.After(normalizedEnvDateTime.Add(-time.Microsecond)) && currentDateTime.Before(normalizedEnvDateTime.AddDate(0, 0, 1))) {
+		return errors.New("受付可能日ではありません。")
 	}
 	return nil
 }
