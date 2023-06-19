@@ -16,5 +16,7 @@ func NewRouter() *gin.Engine {
 
 	router.GET("/users/:uid", controllers.GetReceptionUserInfo)
 	router.PUT("/users/:uid", controllers.SetReceptionUserBodyTemperature)
+
+	router.GET("/env-time", controllers.GetEnvironmentTime)
 	return router
 }
