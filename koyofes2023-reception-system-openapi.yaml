@@ -1,40 +1,37 @@
 openapi: 3.0.0
 info:
-  version: '1.0'
   title: Koyo-Back-Endpoint
+  version: '1.0'
   description: こうよう祭2023の受付システムのバックエンドエンドポイント
 servers:
   - url: 'http://localhost:8080'
     description: ローカル
 paths:
   '/users/{uid}':
+    parameters:
+      - schema:
+          type: string
+        name: uid
+        in: path
+        required: true
     get:
       summary: ''
-      description: ''
       operationId: get-users-uid
-      parameters:
-        - name: uid
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           $ref: '#/components/responses/userdata'
         '400':
           $ref: '#/components/responses/error'
-      servers:
-        - url: 'http://localhost:8080'
-          description: ローカル
+      description: ''
+      parameters: []
     put:
       summary: ''
       operationId: put-users-uid
-      parameters:
-        - name: uid
-          in: path
-          required: true
-          schema:
-            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/error'
       requestBody:
         required: true
         content:
@@ -46,20 +43,29 @@ paths:
                     temperature_day1:
                       type: number
                       format: float
+                      x-stoplight:
+                        id: tnzjkrg3k0jam
                 - type: object
                   properties:
                     temperature_day2:
                       type: number
                       format: float
+                      x-stoplight:
+                        id: 33dky4johqmdy
+  /env-time:
+    get:
+      summary: ''
+      tags: []
       responses:
         '200':
-          description: OK
+          $ref: '#/components/responses/env-datetime'
         '400':
           $ref: '#/components/responses/error'
-      servers:
-        - url: 'http://localhost:8080'
-          description: ローカル
+      operationId: get-env-time
 components:
+  schemas: {}
+  securitySchemes: {}
+  requestBodies: {}
   responses:
     userdata:
       description: Example response
@@ -70,17 +76,29 @@ components:
             properties:
               name:
                 type: string
+                x-stoplight:
+                  id: v49uoelbeo45i
               uid:
                 type: string
+                x-stoplight:
+                  id: z269jd16tbhh5
               attends_day1:
                 type: boolean
+                x-stoplight:
+                  id: 4yr1wced3op0e
               attends_day2:
                 type: boolean
+                x-stoplight:
+                  id: 1ymoqllunnud9
               temperature_day1:
                 type: number
+                x-stoplight:
+                  id: w3mexct69p0dy
                 format: float
               temperature_day2:
                 type: number
+                x-stoplight:
+                  id: 9jnfzdpezwz0t
                 format: float
             required:
               - name
@@ -93,8 +111,26 @@ components:
         application/json:
           schema:
             type: object
+            required:
+              - error
             properties:
               error:
                 type: string
-            required:
-              - error
+                x-stoplight:
+                  id: aclrszydqciuu
+    env-datetime:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              day1_envtime:
+                type: string
+                x-stoplight:
+                  id: 8wz3lsbre2hwk
+              day2_envtime:
+                type: string
+                x-stoplight:
+                  id: i0ouyp1o3z7i2
+
