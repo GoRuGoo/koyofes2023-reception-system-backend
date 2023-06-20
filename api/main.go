@@ -10,9 +10,11 @@ import (
 
 func main() {
 	db.Init()
-	models.Init()
-	models.InitReception()
-
+	if os.Getenv("KOYOFES2023_MODE") == "DEBUG" {
+		models.Init()
+		models.InitReception()
+		fmt.Println("Migration done.")
+	}
 	r := router.NewRouter()
 	port := fmt.Sprintf(":%s", os.Getenv("PORT"))
 	r.Run(port)
