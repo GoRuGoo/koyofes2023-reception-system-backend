@@ -11,7 +11,7 @@ func NewRouter() *gin.Engine {
 
 	router := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000", "https://qrcode-reader-vert.vercel.app/", "https://koyofes2023-reception.vercel.app/"}
+	config.AllowOrigins = []string{"http://localhost:3000", "https://qrcode-reader-vert.vercel.app", "https://koyofes2023-reception.vercel.app"}
 	router.Use(cors.New(config))
 
 	router.GET("/users/:uid", controllers.GetReceptionUserInfo)
