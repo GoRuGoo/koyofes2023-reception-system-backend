@@ -1,4 +1,6 @@
 openapi: 3.0.0
+x-stoplight:
+  id: 0bwpxk9wj7g16
 info:
   title: Koyo-Back-Endpoint
   version: '1.0'
@@ -29,7 +31,7 @@ paths:
       operationId: put-users-uid
       responses:
         '200':
-          description: OK
+          $ref: '#/components/responses/temp'
         '400':
           $ref: '#/components/responses/error'
       requestBody:
@@ -133,4 +135,24 @@ components:
                 type: string
                 x-stoplight:
                   id: i0ouyp1o3z7i2
-
+    temp:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            type: object
+            x-examples:
+              Example 1:
+                result:
+                  temperature_day1: 33.2
+                  temperature_day2: 33.2
+            properties:
+              result:
+                type: object
+                properties:
+                  temperature_day1:
+                    type: number
+                    format: float
+                  temperature_day2:
+                    type: number
+                    format: float

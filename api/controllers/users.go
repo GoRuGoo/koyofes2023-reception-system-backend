@@ -37,6 +37,6 @@ func SetReceptionUserBodyTemperature(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{"result": receptionUserBodyTemperature})
 	return
 }
